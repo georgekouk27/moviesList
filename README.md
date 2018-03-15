@@ -5,7 +5,7 @@ This is the first phase of popular movies project for Android Developer Nanodegr
 ## Features
 
 With the app, you can:
-* Discover the most popular, the most rated or the highest rated movies
+* Discover the most popular, the top rated or the now playing movies
 
 ## How to Work with the Source
 
