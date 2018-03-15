@@ -26,8 +26,3 @@ You must provide your own API key in order to build the app. When you get it, ju
 * [Picasso](http://square.github.io/picasso)
 * [Retrofit](https://github.com/square/retrofit)
 
-
-## Android Developer Nanodegree
-[![udacity][1]][2]
-
-[1]: https://www.udacity.com/course/android-developer-nanodegree--nd801
