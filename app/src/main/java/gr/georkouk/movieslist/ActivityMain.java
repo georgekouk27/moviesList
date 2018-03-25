@@ -25,7 +25,7 @@ import retrofit2.Response;
 @SuppressWarnings("UnusedReturnValue")
 public class ActivityMain extends AppCompatActivity {
 
-    private final static String API_KEY = "";
+    private final static String API_KEY = BuildConfig.API_KEY;
 
     private MoviesRecyclerAdapter moviesAdapter;
     private InterfaceApi interfaceApi;

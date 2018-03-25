@@ -32,6 +32,8 @@ Thumbs.db
 build/
 captures/
 .externalNativeBuild
+gradle.properties
+/gradle.properties
 
 #NDK
 obj/
