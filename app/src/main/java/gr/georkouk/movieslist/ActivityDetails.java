@@ -4,7 +4,10 @@ package gr.georkouk.movieslist;
  * Created by georkouk on 7/3/18.
  */
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,14 +19,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.squareup.picasso.Picasso;
-
 import gr.georkouk.movieslist.adapter.ReviewRecyclerAdapter;
 import gr.georkouk.movieslist.adapter.TrailerRecyclerAdapter;
+import gr.georkouk.movieslist.data.MovieContract;
 import gr.georkouk.movieslist.entity.Movie;
 import gr.georkouk.movieslist.entity.ResponseReviews;
 import gr.georkouk.movieslist.entity.ResponseTrailer;
@@ -46,6 +51,7 @@ public class ActivityDetails extends AppCompatActivity {
     private TextView tvMovieOverview;
     private TextView tvMovieRating;
     private RatingBar ratingBar;
+    private Button btFavs;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private InterfaceApi interfaceApi;
     private TrailerRecyclerAdapter trailersAdapter;
@@ -63,12 +69,12 @@ public class ActivityDetails extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        initializeViews();
-
         Intent intent = getIntent();
 
         if (intent != null){
             this.movie = (Movie) intent.getSerializableExtra("movie");
+
+            initializeViews();
 
             this.interfaceApi = RestClient.getClient().create(InterfaceApi.class);
 
@@ -101,6 +107,26 @@ public class ActivityDetails extends AppCompatActivity {
         this.tvMovieOverview = findViewById(R.id.tvMovieOverview);
         this.tvMovieRating = findViewById(R.id.tvMovieRating);
         this.ratingBar = findViewById(R.id.ratingBar);
+        this.btFavs = findViewById(R.id.btAddToFavs);
+        this.btFavs.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if(isFavorite(movie)){
+                    deleteFavorite(movie);
+
+                    toggleFavsButtonStyle(false);
+                }
+                else{
+                    saveFavorite(movie);
+
+                    toggleFavsButtonStyle(true);
+                }
+            }
+
+        });
+
+        toggleFavsButtonStyle(isFavorite(movie));
 
         this.collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
         this.collapsingToolbarLayout.setExpandedTitleColor(
@@ -163,13 +189,16 @@ public class ActivityDetails extends AppCompatActivity {
     }
 
     private boolean fillTrailers(){
-        Call<ResponseTrailer> call = this.interfaceApi.getMovieTrailers(this.movie.getId(), BuildConfig.API_KEY);
+        Call<ResponseTrailer> call =
+                this.interfaceApi.getMovieTrailers(this.movie.getId(), BuildConfig.API_KEY);
 
         call.enqueue(new Callback<ResponseTrailer>() {
 
             @SuppressWarnings("ConstantConditions")
             @Override
-            public void onResponse(@NonNull Call<ResponseTrailer> call, @NonNull Response<ResponseTrailer> response) {
+            public void onResponse(@NonNull Call<ResponseTrailer> call,
+                                   @NonNull Response<ResponseTrailer> response) {
+
                 trailersAdapter.swapTrailers(response.body().getTrailers());
             }
 
@@ -184,13 +213,16 @@ public class ActivityDetails extends AppCompatActivity {
     }
 
     private boolean fillReviews(){
-        Call<ResponseReviews> call = this.interfaceApi.getMovieReviews(this.movie.getId(), BuildConfig.API_KEY);
+        Call<ResponseReviews> call =
+                this.interfaceApi.getMovieReviews(this.movie.getId(), BuildConfig.API_KEY);
 
         call.enqueue(new Callback<ResponseReviews>() {
 
             @SuppressWarnings("ConstantConditions")
             @Override
-            public void onResponse(@NonNull Call<ResponseReviews> call, @NonNull Response<ResponseReviews> response) {
+            public void onResponse(@NonNull Call<ResponseReviews> call,
+                                   @NonNull Response<ResponseReviews> response) {
+
                 reviewsAdapter.swapReviews(response.body().getReviews());
             }
 
@@ -214,6 +246,77 @@ public class ActivityDetails extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private Boolean isFavorite(Movie movie) {
+        Uri uri = Uri.withAppendedPath(
+                MovieContract.MovieItem.CONTENT_URI,
+                String.valueOf(movie.getId())
+        );
+
+        String[] projection = {
+                MovieContract.MovieItem.COLUMN_ID
+        };
+
+        Cursor cursor = getApplicationContext().getContentResolver().query(
+                uri,
+                projection,
+                null,
+                null,
+                null
+        );
+
+        boolean isFavorite =  cursor != null && (cursor.getCount() > 0);
+
+        assert cursor != null;
+        cursor.close();
+
+        return isFavorite;
+    }
+
+    private boolean saveFavorite(Movie movie){
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieItem.COLUMN_ID, movie.getId());
+        values.put(MovieContract.MovieItem.COLUMN_TITLE, movie.getTitle());
+        values.put(MovieContract.MovieItem.COLUMN_OVERVIEW, movie.getOverview());
+        values.put(MovieContract.MovieItem.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        values.put(MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE, movie.getOriginalTitle());
+        values.put(MovieContract.MovieItem.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
+        values.put(MovieContract.MovieItem.COLUMN_POSTER_PATH, movie.getPosterPath());
+        values.put(MovieContract.MovieItem.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+//        values.put(MovieContract.MovieItem.COLUMN_POSTER_BLOB, posterBlob);
+//        values.put(MovieContract.MovieItem.COLUMN_BACKDROP_BLOB, backdropBlob);
+
+        Uri newUri = getApplicationContext().getContentResolver().insert(MovieContract.MovieItem.CONTENT_URI, values);
+
+        if (newUri == null) {
+            // Toast.makeText(this, str_save_fail, Toast.LENGTH_SHORT).show();
+        } else {
+            //  Toast.makeText(this, str_save_success, Toast.LENGTH_SHORT).show();
+        }
+
+        return true;
+    }
+
+    private boolean deleteFavorite(Movie movie){
+        Uri uri = Uri.withAppendedPath(MovieContract.MovieItem.CONTENT_URI, String.valueOf(movie.getId()));
+
+        getApplicationContext().getContentResolver().delete(uri, "", null);
+
+        return true;
+    }
+
+    private boolean toggleFavsButtonStyle(boolean isFavorite){
+        if(isFavorite){
+            btFavs.setBackgroundColor(Color.TRANSPARENT);
+            btFavs.setTextColor(getResources().getColor(R.color.colorAccent));
+        }
+        else{
+            btFavs.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            btFavs.setTextColor(getResources().getColor(R.color.white));
+        }
+
+        return isFavorite;
     }
 
 }
