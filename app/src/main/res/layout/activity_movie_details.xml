@@ -136,6 +136,16 @@
                         android:numStars="5"
                         android:stepSize="0.1" />
 
+                    <Button
+                        android:id="@+id/btAddToFavs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="20dp"
+                        android:text="Favorite"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:paddingTop="10dp"/>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -152,6 +162,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvTrailers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvReviews"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="20dp"
+                android:layout_height="200dp" />
 
         </LinearLayout>
 
