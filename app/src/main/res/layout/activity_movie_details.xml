@@ -142,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:padding="20dp"
-                        android:text="Favorite"
+                        android:text="@string/favorite"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:paddingTop="10dp"/>
 
@@ -163,16 +163,30 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="@string/trailers"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rvTrailers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="@string/reviews"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rvReviews"
                 android:layout_width="match_parent"
                 android:layout_marginBottom="20dp"
-                android:layout_height="200dp" />
+                android:layout_height="250dp" />
 
         </LinearLayout>
 

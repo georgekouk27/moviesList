@@ -2,9 +2,13 @@
     <string name="app_name">Movies List</string>
     <string name="backdropContentDesc">Movie backdrop image</string>
     <string name="posterontentDesc">Movie poster</string>
+    <string name="trailerontentDesc">Trailer poster</string>
     <string name="release">Release</string>
     <string name="rating">Rating</string>
     <string name="synopsis">Synopsis</string>
+    <string name="favorite">Favorite</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
 
     <string-array name="movies_options">
         <item>Now Playing</item>
