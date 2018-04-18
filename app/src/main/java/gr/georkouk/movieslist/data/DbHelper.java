@@ -22,9 +22,7 @@ public class DbHelper extends SQLiteOpenHelper{
                 MovieContract.MovieItem.COLUMN_VOTE_AVERAGE + " REAL DEFAULT 0, " +
                 MovieContract.MovieItem.COLUMN_RELEASE_DATE + " TEXT DEFAULT ''," +
                 MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE + " TEXT DEFAULT ''," +
-                MovieContract.MovieItem.COLUMN_BACKDROP_BLOB + " BLOB," +
                 MovieContract.MovieItem.COLUMN_BACKDROP_PATH + " TEXT DEFAULT ''," +
-                MovieContract.MovieItem.COLUMN_POSTER_BLOB + " BLOB," +
                 MovieContract.MovieItem.COLUMN_POSTER_PATH + " TEXT DEFAULT ''" + ")";
 
         db.execSQL(CREATE_INVENTORY_TABLE);
@@ -34,4 +32,5 @@ public class DbHelper extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
+
 }

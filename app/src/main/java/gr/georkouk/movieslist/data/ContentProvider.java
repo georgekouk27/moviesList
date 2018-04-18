@@ -198,20 +198,10 @@ public class ContentProvider extends android.content.ContentProvider{
             throw new IllegalArgumentException("Item requires poster path");
         }
 
-//        String posterBlob = values.getAsString(MovieContract.MovieItem.COLUMN_POSTER_BLOB);
-//        if (posterBlob == null) {
-//            throw new IllegalArgumentException("Item requires poster blob");
-//        }
-
         String backdropPath = values.getAsString(MovieContract.MovieItem.COLUMN_BACKDROP_PATH);
         if (backdropPath == null) {
             throw new IllegalArgumentException("Item requires backdrop path");
         }
-
-//        String backdropBlob = values.getAsString(MovieContract.MovieItem.COLUMN_BACKDROP_BLOB);
-//        if (backdropBlob == null) {
-//            throw new IllegalArgumentException("Item requires backdrop blob");
-//        }
 
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
@@ -278,24 +268,10 @@ public class ContentProvider extends android.content.ContentProvider{
             }
         }
 
-        if (values.containsKey(MovieContract.MovieItem.COLUMN_POSTER_BLOB)) {
-            String posterBlob = values.getAsString(MovieContract.MovieItem.COLUMN_POSTER_BLOB);
-            if (posterBlob == null) {
-                throw new IllegalArgumentException("Item requires poster blob");
-            }
-        }
-
         if (values.containsKey(MovieContract.MovieItem.COLUMN_BACKDROP_PATH)) {
             String backdropPath = values.getAsString(MovieContract.MovieItem.COLUMN_BACKDROP_PATH);
             if (backdropPath == null) {
                 throw new IllegalArgumentException("Item requires backdrop path");
-            }
-        }
-
-        if (values.containsKey(MovieContract.MovieItem.COLUMN_BACKDROP_BLOB)) {
-            String backdropBlob = values.getAsString(MovieContract.MovieItem.COLUMN_BACKDROP_BLOB);
-            if (backdropBlob == null) {
-                throw new IllegalArgumentException("Item requires backdrop blob");
             }
         }
 

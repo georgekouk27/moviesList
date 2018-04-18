@@ -1,6 +1,9 @@
 package gr.georkouk.movieslist;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +15,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import gr.georkouk.movieslist.adapter.MoviesRecyclerAdapter;
+import gr.georkouk.movieslist.data.MovieContract;
 import gr.georkouk.movieslist.entity.Movie;
 import gr.georkouk.movieslist.entity.ResponseMovies;
 import gr.georkouk.movieslist.interfaces.InterfaceApi;
@@ -99,28 +107,33 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private boolean fillMoviesList(int pos){
-        Call<ResponseMovies> call = getApiCallType(pos);
+        if(pos == 3){
+            getMoviesFromDB();
+        }
+        else {
+            Call<ResponseMovies> call = getApiCallType(pos);
 
-        call.enqueue(new Callback<ResponseMovies>() {
+            call.enqueue(new Callback<ResponseMovies>() {
 
-            @SuppressWarnings("ConstantConditions")
-            @Override
-            public void onResponse(@NonNull Call<ResponseMovies> call, @NonNull Response<ResponseMovies> response) {
-                moviesAdapter.swapMovies(response.body().getResults());
-            }
+                @SuppressWarnings("ConstantConditions")
+                @Override
+                public void onResponse(@NonNull Call<ResponseMovies> call, @NonNull Response<ResponseMovies> response) {
+                    moviesAdapter.swapMovies(response.body().getResults());
+                }
 
-            @Override
-            public void onFailure(@NonNull Call<ResponseMovies> call, @NonNull Throwable t) {
-                Log.e("my==>", t.toString());
-            }
+                @Override
+                public void onFailure(@NonNull Call<ResponseMovies> call, @NonNull Throwable t) {
+                    Log.e("my==>", t.toString());
+                }
 
-        });
+            });
+        }
 
         return true;
     }
 
     private Call<ResponseMovies> getApiCallType(int pos){
-        Call<ResponseMovies> call;
+        Call<ResponseMovies> call = null;
 
         if(pos == 0){
             call = this.interfaceApi.getNowPlayingMovies(API_KEY);
@@ -128,11 +141,94 @@ public class ActivityMain extends AppCompatActivity {
         else if (pos == 1){
             call = this.interfaceApi.getTopRatedMovies(API_KEY);
         }
-        else{
+        else if (pos == 2){
             call = this.interfaceApi.getPopularMovies(API_KEY);
         }
 
         return call;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void getMoviesFromDB() {
+        new AsyncTask<Void, Void, Cursor>() {
+            List<Movie> items = new ArrayList<>();
+
+            @Override
+            protected Cursor doInBackground(Void... params) {
+                String[] projection = {
+                        MovieContract.MovieItem.COLUMN_ID,
+                        MovieContract.MovieItem.COLUMN_TITLE,
+                        MovieContract.MovieItem.COLUMN_OVERVIEW,
+                        MovieContract.MovieItem.COLUMN_VOTE_AVERAGE,
+                        MovieContract.MovieItem.COLUMN_RELEASE_DATE,
+                        MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE,
+                        MovieContract.MovieItem.COLUMN_POSTER_PATH,
+                        MovieContract.MovieItem.COLUMN_BACKDROP_PATH,
+                };
+                return getApplicationContext().getContentResolver().query(
+                        MovieContract.MovieItem.CONTENT_URI,
+                        projection,
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            @Override
+            protected void onPostExecute(Cursor cursor) {
+                try {
+                    if (cursor != null) {
+
+                        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                            Movie movie = new Movie();
+
+                            movie.setId(
+                                    cursor.getInt(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ID)));
+
+                            movie.setTitle(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_TITLE)));
+
+                            movie.setOverview(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_OVERVIEW)));
+
+                            movie.setVoteAverage(
+                                    cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_VOTE_AVERAGE)));
+
+                            movie.setReleaseDate(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_RELEASE_DATE)));
+
+                            movie.setOriginalTitle(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE)));
+
+                            movie.setPosterPath(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_POSTER_PATH)));
+
+                            movie.setBackdropPath(
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_BACKDROP_PATH)));
+
+                            items.add(movie);
+                        }
+
+                    }
+
+                    swapMovies(items);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+                finally {
+                    if(cursor != null && !cursor.isClosed()) {
+                        cursor.close();
+                    }
+                }
+            }
+        }.execute();
+    }
+
+    private boolean swapMovies(final List<Movie> movies){
+        moviesAdapter.swapMovies(movies);
+
+        return movies.size() > 0;
     }
 
 }

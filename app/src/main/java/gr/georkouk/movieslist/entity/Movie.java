@@ -103,7 +103,7 @@ public class Movie implements Serializable {
     }
 
     public String getPosterPath() {
-        return MOVIE_IMG_URI + posterPath;
+        return this.posterPath;
     }
 
     public void setPosterPath(String posterPath) {
@@ -111,11 +111,19 @@ public class Movie implements Serializable {
     }
 
     public String getBackdropPath() {
-        return MOVIE_IMG_URI + backdropPath;
+        return this.backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
+    }
+
+    public String getFullPosterPath() {
+        return MOVIE_IMG_URI + this.posterPath;
+    }
+
+    public String getFullBackdropPath() {
+        return MOVIE_IMG_URI + this.backdropPath;
     }
 
 }

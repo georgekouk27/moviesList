@@ -5,7 +5,9 @@ package gr.georkouk.movieslist.adapter;
  */
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,6 @@ import gr.georkouk.movieslist.entity.Movie;
 public class MoviesRecyclerAdapter
         extends RecyclerView.Adapter<MoviesRecyclerAdapter.ViewHolder> {
 
-
     private Context context;
     private List<Movie> movies;
     private OnItemclickListener onItemClickListener;
@@ -32,8 +33,9 @@ public class MoviesRecyclerAdapter
         this.movies = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.movie_item, parent, false);
 
@@ -41,11 +43,11 @@ public class MoviesRecyclerAdapter
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Movie movie = this.movies.get(position);
 
         Picasso.with(this.context)
-                .load(movie.getPosterPath())
+                .load(movie.getFullPosterPath())
                 .into(holder.poster);
 
         holder.view.setOnClickListener(new View.OnClickListener() {

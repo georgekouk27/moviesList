@@ -160,11 +160,11 @@ public class ActivityDetails extends AppCompatActivity {
 
     private boolean fillView(){
         Picasso.with(this)
-                .load(movie.getBackdropPath())
+                .load(movie.getFullBackdropPath())
                 .into(this.ivBackdrop);
 
         Picasso.with(this)
-                .load(movie.getPosterPath())
+                .load(movie.getFullPosterPath())
                 .into(this.ivPoster);
 
         this.collapsingToolbarLayout.setTitle(movie.getOriginalTitle());
@@ -284,18 +284,10 @@ public class ActivityDetails extends AppCompatActivity {
         values.put(MovieContract.MovieItem.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
         values.put(MovieContract.MovieItem.COLUMN_POSTER_PATH, movie.getPosterPath());
         values.put(MovieContract.MovieItem.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
-//        values.put(MovieContract.MovieItem.COLUMN_POSTER_BLOB, posterBlob);
-//        values.put(MovieContract.MovieItem.COLUMN_BACKDROP_BLOB, backdropBlob);
 
         Uri newUri = getApplicationContext().getContentResolver().insert(MovieContract.MovieItem.CONTENT_URI, values);
 
-        if (newUri == null) {
-            // Toast.makeText(this, str_save_fail, Toast.LENGTH_SHORT).show();
-        } else {
-            //  Toast.makeText(this, str_save_success, Toast.LENGTH_SHORT).show();
-        }
-
-        return true;
+        return newUri != null;
     }
 
     private boolean deleteFavorite(Movie movie){
