@@ -99,6 +99,16 @@ public class ActivityDetails extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     private boolean initializeViews(){
         this.ivBackdrop = findViewById(R.id.ivBackdrop);
         this.ivPoster = findViewById(R.id.ivPoster);

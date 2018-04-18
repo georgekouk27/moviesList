@@ -37,6 +37,8 @@ public class ActivityMain extends AppCompatActivity {
 
     private MoviesRecyclerAdapter moviesAdapter;
     private InterfaceApi interfaceApi;
+    private AsyncTask asyncTask;
+    private Spinner spinner;
 
 
     @Override
@@ -57,18 +59,53 @@ public class ActivityMain extends AppCompatActivity {
         this.interfaceApi = RestClient.getClient().create(InterfaceApi.class);
     }
 
+    @Override
+    protected void onResume() {
+        if(this.spinner != null && this.spinner.getSelectedItemPosition() == 3){
+            fillMoviesList(3);
+        }
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if(savedInstanceState.getBoolean("asyncRunning", false)){
+            fillMoviesList(3);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(this.asyncTask != null
+                && !this.asyncTask.isCancelled()
+                && this.asyncTask.getStatus() != AsyncTask.Status.FINISHED){
+
+            this.asyncTask.cancel(true);
+
+            outState.putBoolean("asyncRunning" , true);
+        }
+        else {
+            outState.putBoolean("asyncRunning", false);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
     private boolean initializeView(){
 
-        Spinner spinner = findViewById(R.id.spMoviesOptions);
+        this.spinner = findViewById(R.id.spMoviesOptions);
 
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>
                 (this, R.layout.layout_drop_title, getResources().getStringArray(R.array.movies_options));
 
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spinner.setAdapter(spinnerArrayAdapter);
+        this.spinner.setAdapter(spinnerArrayAdapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        this.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -117,7 +154,9 @@ public class ActivityMain extends AppCompatActivity {
 
                 @SuppressWarnings("ConstantConditions")
                 @Override
-                public void onResponse(@NonNull Call<ResponseMovies> call, @NonNull Response<ResponseMovies> response) {
+                public void onResponse(@NonNull Call<ResponseMovies> call,
+                                       @NonNull Response<ResponseMovies> response) {
+
                     moviesAdapter.swapMovies(response.body().getResults());
                 }
 
@@ -150,7 +189,7 @@ public class ActivityMain extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     private void getMoviesFromDB() {
-        new AsyncTask<Void, Void, Cursor>() {
+        this.asyncTask = new AsyncTask<Void, Void, Cursor>() {
             List<Movie> items = new ArrayList<>();
 
             @Override
@@ -183,28 +222,36 @@ public class ActivityMain extends AppCompatActivity {
                             Movie movie = new Movie();
 
                             movie.setId(
-                                    cursor.getInt(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ID)));
+                                    cursor.getInt(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ID))
+                            );
 
                             movie.setTitle(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_TITLE)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_TITLE))
+                            );
 
                             movie.setOverview(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_OVERVIEW)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_OVERVIEW))
+                            );
 
                             movie.setVoteAverage(
-                                    cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_VOTE_AVERAGE)));
+                                    cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_VOTE_AVERAGE))
+                            );
 
                             movie.setReleaseDate(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_RELEASE_DATE)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_RELEASE_DATE))
+                            );
 
                             movie.setOriginalTitle(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_ORIGINAL_TITLE))
+                            );
 
                             movie.setPosterPath(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_POSTER_PATH)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_POSTER_PATH))
+                            );
 
                             movie.setBackdropPath(
-                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_BACKDROP_PATH)));
+                                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieItem.COLUMN_BACKDROP_PATH))
+                            );
 
                             items.add(movie);
                         }
