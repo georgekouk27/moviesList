@@ -18,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -95,6 +96,22 @@ public class ActivityDetails extends AppCompatActivity {
         if(item.getItemId() == android.R.id.home){
             onBackPressed();
         }
+        else if (item.getItemId() == R.id.btShare) {
+
+            Trailer trailer = this.trailersAdapter.getTrailer(0);
+
+            if(!trailer.getKey().equals("")) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+                shareIntent.setType("text/plain");
+
+                shareIntent.putExtra(
+                        Intent.EXTRA_TEXT,
+                        "http://www.youtube.com/watch?v=" + trailer.getKey());
+
+                startActivity(Intent.createChooser(shareIntent, "Share..."));
+            }
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -107,6 +124,12 @@ public class ActivityDetails extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.details_menu, menu);
+        return true;
     }
 
     private boolean initializeViews(){

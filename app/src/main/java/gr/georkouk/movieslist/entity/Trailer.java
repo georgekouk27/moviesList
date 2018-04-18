@@ -32,6 +32,8 @@ public class Trailer {
 
 
     public Trailer() {
+        this.id = "";
+        this.key = "";
     }
 
     public String getId() {

@@ -9,6 +9,7 @@
     <string name="favorite">Favorite</string>
     <string name="trailers">Trailers</string>
     <string name="reviews">Reviews</string>
+    <string name="share">Share</string>
 
     <string-array name="movies_options">
         <item>Now Playing</item>

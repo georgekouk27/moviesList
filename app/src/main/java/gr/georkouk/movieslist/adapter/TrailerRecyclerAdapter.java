@@ -69,6 +69,15 @@ public class TrailerRecyclerAdapter extends RecyclerView.Adapter<TrailerRecycler
         this.onItemclickListener = onItemclickListener;
     }
 
+    public Trailer getTrailer(int pos){
+        if(this.trailers.size() > pos){
+            return this.trailers.get(pos);
+        }
+        else{
+            return new Trailer();
+        }
+    }
+
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
