@@ -25,6 +25,10 @@ You must provide your own API key in order to build the app. When you get it, ju
 
 ![screen](../master/screens/details.png)
 
+![screen](../master/screens/details2.png)
+
+![screen](../master/screens/favorites.png)
+
 ## Libraries
 
 * [Picasso](http://square.github.io/picasso)
