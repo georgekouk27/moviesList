@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -44,6 +45,9 @@ import retrofit2.Response;
 @SuppressWarnings({"UnusedReturnValue", "ResultOfMethodCallIgnored"})
 public class ActivityDetails extends AppCompatActivity {
 
+    private static final String LAYOUT_MANAGER_STATE_TRAILERS = "LAYOUT_MANAGER_STATE_TRAILERS";
+    private static final String LAYOUT_MANAGER_STATE_REVIEWS = "LAYOUT_MANAGER_STATE_REVIEWS";
+
     private Movie movie;
     private ImageView ivBackdrop;
     private ImageView ivPoster;
@@ -57,6 +61,10 @@ public class ActivityDetails extends AppCompatActivity {
     private InterfaceApi interfaceApi;
     private TrailerRecyclerAdapter trailersAdapter;
     private ReviewRecyclerAdapter reviewsAdapter;
+    private Parcelable layoutManagerStateTrailers;
+    private Parcelable layoutManagerStateReviews;
+    private RecyclerView rvTrailers;
+    private RecyclerView rvReviews;
 
 
     @Override
@@ -118,11 +126,27 @@ public class ActivityDetails extends AppCompatActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        this.layoutManagerStateTrailers =
+                savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE_TRAILERS);
+
+        this.layoutManagerStateReviews =
+                savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE_REVIEWS);
+
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(
+                LAYOUT_MANAGER_STATE_TRAILERS,
+                this.rvTrailers.getLayoutManager().onSaveInstanceState()
+        );
+
+        outState.putParcelable(
+                LAYOUT_MANAGER_STATE_REVIEWS,
+                this.rvReviews.getLayoutManager().onSaveInstanceState()
+        );
+
         super.onSaveInstanceState(outState);
     }
 
@@ -166,7 +190,7 @@ public class ActivityDetails extends AppCompatActivity {
                 getResources().getColor(R.color.transparent)
         );
 
-        RecyclerView rvTrailers = findViewById(R.id.rvTrailers);
+        rvTrailers = findViewById(R.id.rvTrailers);
 
         rvTrailers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
@@ -180,7 +204,7 @@ public class ActivityDetails extends AppCompatActivity {
 
         rvTrailers.setAdapter(this.trailersAdapter);
 
-        RecyclerView rvReviews = findViewById(R.id.rvReviews);
+        rvReviews = findViewById(R.id.rvReviews);
 
         rvReviews.setLayoutManager(new LinearLayoutManager(this));
 
@@ -233,6 +257,10 @@ public class ActivityDetails extends AppCompatActivity {
                                    @NonNull Response<ResponseTrailer> response) {
 
                 trailersAdapter.swapTrailers(response.body().getTrailers());
+
+                if (layoutManagerStateTrailers != null) {
+                    rvTrailers.getLayoutManager().onRestoreInstanceState(layoutManagerStateTrailers);
+                }
             }
 
             @Override
@@ -257,6 +285,10 @@ public class ActivityDetails extends AppCompatActivity {
                                    @NonNull Response<ResponseReviews> response) {
 
                 reviewsAdapter.swapReviews(response.body().getReviews());
+
+                if (layoutManagerStateReviews != null) {
+                    rvReviews.getLayoutManager().onRestoreInstanceState(layoutManagerStateReviews);
+                }
             }
 
             @Override
