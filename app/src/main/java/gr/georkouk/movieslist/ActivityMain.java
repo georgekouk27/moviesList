@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,11 +35,14 @@ import retrofit2.Response;
 public class ActivityMain extends AppCompatActivity {
 
     private final static String API_KEY = BuildConfig.API_KEY;
+    private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
 
     private MoviesRecyclerAdapter moviesAdapter;
     private InterfaceApi interfaceApi;
     private AsyncTask asyncTask;
     private Spinner spinner;
+    private RecyclerView recyclerView;
+    private Parcelable layoutManagerState;
 
 
     @Override
@@ -75,6 +79,8 @@ public class ActivityMain extends AppCompatActivity {
         if(savedInstanceState.getBoolean("asyncRunning", false)){
             fillMoviesList(3);
         }
+
+        this.layoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE);
     }
 
     @Override
@@ -90,6 +96,11 @@ public class ActivityMain extends AppCompatActivity {
         else {
             outState.putBoolean("asyncRunning", false);
         }
+
+        outState.putParcelable(
+                LAYOUT_MANAGER_STATE,
+                this.recyclerView.getLayoutManager().onSaveInstanceState()
+        );
 
         super.onSaveInstanceState(outState);
     }
@@ -119,9 +130,9 @@ public class ActivityMain extends AppCompatActivity {
 
         });
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        this.recyclerView = findViewById(R.id.recyclerView);
 
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        this.recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         this.moviesAdapter = new MoviesRecyclerAdapter(this);
 
@@ -138,7 +149,7 @@ public class ActivityMain extends AppCompatActivity {
 
         });
 
-        recyclerView.setAdapter(this.moviesAdapter);
+        this.recyclerView.setAdapter(this.moviesAdapter);
 
         return true;
     }
@@ -158,6 +169,8 @@ public class ActivityMain extends AppCompatActivity {
                                        @NonNull Response<ResponseMovies> response) {
 
                     moviesAdapter.swapMovies(response.body().getResults());
+
+                    restoreRecyclerViewState();
                 }
 
                 @Override
@@ -275,7 +288,19 @@ public class ActivityMain extends AppCompatActivity {
     private boolean swapMovies(final List<Movie> movies){
         moviesAdapter.swapMovies(movies);
 
+        restoreRecyclerViewState();
+
         return movies.size() > 0;
+    }
+
+    private boolean restoreRecyclerViewState(){
+        if (this.layoutManagerState != null) {
+            this.recyclerView.getLayoutManager().onRestoreInstanceState(this.layoutManagerState);
+
+            return true;
+        }
+
+        return false;
     }
 
 }
