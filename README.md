@@ -21,13 +21,13 @@ You must provide your own API key in order to build the app. When you get it, ju
 
 ## Screens
 
-![screen](../master/screens/main.png)
+<img src="/screens/main.png" width="500">
 
-![screen](../master/screens/details.png)
+<img src="/screens/details.png" width="500">
 
-![screen](../master/screens/details2.png)
+<img src="/screens/details2.png" width="500">
 
-![screen](../master/screens/favorites.png)
+<img src="/screens/favorites.png" width="500">
 
 ## Libraries
 
